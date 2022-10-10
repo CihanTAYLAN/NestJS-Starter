@@ -1,16 +1,8 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Entity, Column } from 'typeorm';
+import { BaseModel } from './base.entity';
 
 @Entity()
-export class Admin {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class Admin extends BaseModel {
   @Column({ type: 'varchar', length: 120 })
   public firstName: string;
 
@@ -25,14 +17,4 @@ export class Admin {
 
   @Column({ type: 'boolean', default: false })
   public isDeleted: boolean;
-
-  /*
-   * Create and Update Date Columns
-   */
-
-  @CreateDateColumn({ type: 'timestamp' })
-  public createdAt!: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  public updatedAt!: Date;
 }
