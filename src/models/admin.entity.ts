@@ -1,5 +1,5 @@
 import { Entity, Column } from 'typeorm';
-import { BaseModel } from './base.entity';
+import { BaseModel } from './base';
 
 @Entity()
 export class Admin extends BaseModel {
