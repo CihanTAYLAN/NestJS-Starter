@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
-import { AdminCreateDto } from './admin.dto';
 import { Admin } from '../../../models/admin.entity';
 import { AdminUpdateDto } from './dtos/adminUpdate.dto';
 import {
@@ -9,7 +8,7 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { AdminDto } from './dtos/admin.dto';
+import { AdminCreateDto } from './dtos/adminCreate.dto';
 
 @Injectable()
 export class AdminService {
@@ -22,8 +21,8 @@ export class AdminService {
     return paginate<Admin>(queryBuilder, options);
   }
 
-  public get(id: string): Promise<Admin> {
-    return this.repository.findOne({ where: { id: id } });
+  public get(rowId: string): Promise<Admin> {
+    return this.repository.findOne({ where: { id: rowId } });
   }
 
   public create(body: AdminCreateDto): Promise<Admin> {
@@ -31,34 +30,36 @@ export class AdminService {
     admin.firstName = body.firstName;
     admin.lastName = body.lastName;
     admin.email = body.email;
+    admin.username = body.username;
     admin.password = body.password;
     return this.repository.save(admin);
   }
 
-  public async update(body: AdminUpdateDto): Promise<Admin> {
+  public async update(rowId: string, body: AdminUpdateDto): Promise<Admin> {
     const admin: Admin = new Admin();
     admin.firstName = body.firstName ?? admin.firstName;
     admin.lastName = body.lastName ?? admin.lastName;
     admin.email = body.email ?? admin.email;
+    admin.username = body.username ?? admin.username;
     admin.password = body.password ?? admin.password;
 
     const up = await this.repository
       .createQueryBuilder()
       .update(Admin)
       .set(admin)
-      .where('id = :id', { id: body.id })
+      .where('id = :id', { id: rowId })
       .execute();
     if (up.affected >= 1) {
-      return this.repository.findOne({ where: { id: body.id } });
+      return this.repository.findOne({ where: { id: rowId } });
     }
   }
 
-  public async delete(id: string): Promise<DeleteResult> {
+  public async delete(rowId: string): Promise<DeleteResult> {
     const drop = await this.repository
       .createQueryBuilder()
       .delete()
       .from(Admin)
-      .where('id = :id', { id: id })
+      .where('id = :id', { id: rowId })
       .execute();
     return drop;
   }

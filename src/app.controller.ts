@@ -1,12 +1,13 @@
 import { Controller, Get, Redirect } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiExcludeController } from '@nestjs/swagger';
+import { config } from 'dotenv';
+config();
 
-@ApiTags('Doc')
 @Controller()
+@ApiExcludeController()
 export class AppController {
   @Get()
-  @Redirect('/api')
-  @ApiOkResponse({ status: 200, description: 'Redirect to api doc' })
+  @Redirect(process.env.API_DOC_PATH)
   home(): void {
     //
   }
