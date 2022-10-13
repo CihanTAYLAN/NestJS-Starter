@@ -14,25 +14,28 @@ import {
   DefaultValuePipe,
   ParseIntPipe,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AdminDto } from 'src/api/backoffice/admin/dtos/admin.dto';
-import { AdminCreateDto } from './admin.dto';
 import { AdminService } from './admin.service';
 import { AdminUpdateDto } from './dtos/adminUpdate.dto';
-import { AdminPaginateDto } from './dtos/adminList.dt';
+import { AdminPaginateDto } from './dtos/adminList.dto';
+import { AdminCreateDto } from './dtos/adminCreate.dto';
 
-@ApiTags('Backoffice -> Admin Management')
+@ApiTags('Admin Management')
+@ApiBearerAuth('jwtAdminAuth')
 @Controller()
 export class AdminController {
   @Inject(AdminService)
   private readonly service: AdminService;
 
   @Post()
+  @ApiOperation({ operationId: 'Add admin' })
   async create(@Body() body: AdminCreateDto): Promise<AdminDto> {
     return new AdminDto(await this.service.create(body));
   }
 
   @Get()
+  @ApiOperation({ operationId: 'Get all admins' })
   async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
@@ -50,21 +53,31 @@ export class AdminController {
     return new AdminPaginateDto(rows.items, rows.meta, rows?.links);
   }
 
-  @Get('/:id')
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<AdminDto> {
-    return new AdminDto(await this.service.get(id));
+  @Get('/:rowId')
+  @ApiOperation({ operationId: 'Get single admin' })
+  async findOne(
+    @Param('rowId', ParseUUIDPipe) rowId: string,
+  ): Promise<AdminDto> {
+    return new AdminDto(await this.service.get(rowId));
   }
 
-  @Put('/:id')
-  async update(@Body() body: AdminUpdateDto): Promise<AdminDto> {
-    return new AdminDto(await this.service.update(body));
+  @Put('/:rowId')
+  @ApiOperation({ operationId: 'Update admin' })
+  async update(
+    @Body() body: AdminUpdateDto,
+    @Param('rowId', ParseUUIDPipe) rowId: string,
+  ): Promise<AdminDto> {
+    return new AdminDto(await this.service.update(rowId, body));
   }
 
-  @Delete('/:id')
-  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<AdminDto> {
-    const admin = await this.service.get(id);
+  @Delete('/:rowId')
+  @ApiOperation({ operationId: 'Delete admin' })
+  async delete(
+    @Param('rowId', ParseUUIDPipe) rowId: string,
+  ): Promise<AdminDto> {
+    const admin = await this.service.get(rowId);
     if (admin) {
-      const del = await this.service.delete(id);
+      const del = await this.service.delete(rowId);
       if (del.affected > 0) {
         return admin;
       } else {

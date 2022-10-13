@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { RouterModule } from '@nestjs/core';
 import { BackofficeModule } from './api/backoffice/backoffice.module';
 import { AdminModule } from './api/backoffice/admin/admin.module';
+import { AuthModule } from './api/backoffice/auth/auth.module';
 
 @Module({
   imports: [
@@ -24,6 +25,10 @@ import { AdminModule } from './api/backoffice/admin/admin.module';
             path: 'backoffice',
             module: BackofficeModule,
             children: [
+              {
+                path: 'auth',
+                module: AuthModule,
+              },
               {
                 path: 'admin',
                 module: AdminModule,

@@ -8,6 +8,7 @@ export class AdminDto {
     this.firstName = admin.firstName;
     this.lastName = admin.lastName;
     this.email = admin.email;
+    this.username = admin.username;
     this.createdAt = admin.createdAt;
     return this;
   }
@@ -18,18 +19,23 @@ export class AdminDto {
 
   @IsNotEmpty()
   @IsString()
-  @ApiProperty({ example: 'John', type: 'string' })
+  @ApiProperty({ example: 'John' })
   firstName: string;
 
   @IsNotEmpty()
   @IsString()
-  @ApiProperty({ example: 'Doe', type: 'string' })
+  @ApiProperty({ example: 'Doe' })
   lastName: string;
 
   @IsNotEmpty()
   @IsString()
-  @ApiProperty({ example: 'john_doe@example.com', type: 'string' })
+  @ApiProperty({ example: 'john_doe@example.com' })
   email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({ example: 'johndoe' })
+  username: string;
 
   @IsNotEmpty()
   @IsString()
