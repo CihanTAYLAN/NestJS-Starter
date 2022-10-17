@@ -20,6 +20,7 @@ import { AdminService } from './admin.service';
 import { AdminUpdateDto } from './dtos/adminUpdate.dto';
 import { AdminPaginateDto } from './dtos/adminList.dto';
 import { AdminCreateDto } from './dtos/adminCreate.dto';
+import { AdminSearchDto } from './dtos/adminSearch.dto';
 
 @ApiTags('Admin Management')
 @ApiBearerAuth('jwtAdminAuth')
@@ -48,8 +49,31 @@ export class AdminController {
         process.env.APP_URL +
         ':' +
         process.env.APP_PORT +
-        '/api/backoffice/admin/paginate',
+        '/api/backoffice/admin',
     });
+    return new AdminPaginateDto(rows.items, rows.meta, rows?.links);
+  }
+
+  @Post('/search')
+  @ApiOperation({ operationId: 'Get all admins with search' })
+  async findAllWithSearch(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+    @Body() searchBody: AdminSearchDto,
+  ): Promise<AdminPaginateDto> {
+    limit = limit > 100 ? 100 : limit;
+    const rows = await this.service.getAll(
+      {
+        page,
+        limit,
+        route:
+          process.env.APP_URL +
+          ':' +
+          process.env.APP_PORT +
+          '/api/backoffice/admin',
+      },
+      searchBody,
+    );
     return new AdminPaginateDto(rows.items, rows.meta, rows?.links);
   }
 

@@ -9,15 +9,28 @@ import {
   Pagination,
 } from 'nestjs-typeorm-paginate';
 import { AdminCreateDto } from './dtos/adminCreate.dto';
+import { AdminSearchDto } from './dtos/adminSearch.dto';
 
 @Injectable()
 export class AdminService {
   @InjectRepository(Admin)
   private readonly repository: Repository<Admin>;
 
-  async getAll(options: IPaginationOptions): Promise<Pagination<Admin>> {
+  async getAll(
+    options: IPaginationOptions,
+    searchBody?: AdminSearchDto,
+  ): Promise<Pagination<Admin>> {
     const queryBuilder = this.repository.createQueryBuilder('a');
     queryBuilder.orderBy('a.createdAt', 'DESC');
+    if (searchBody) {
+      Object.entries(searchBody).map((row) => {
+        console.log(row[0]);
+        console.log(row[1]);
+        queryBuilder.where(`a.${row[0]} like :${row[0]}`, {
+          [row[0]]: `%${row[1]}%`,
+        });
+      });
+    }
     return paginate<Admin>(queryBuilder, options);
   }
 
